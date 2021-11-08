@@ -81,7 +81,7 @@ class Engine:
  
         FUEL_VOLUME = 0  # maximum volume of fuel - no idea about this parameter
  
-        BULLET_RANGE = 100 # range of the bullet - have not found the value for this constant
+        BULLET_RANGE = config.speed["bullet"]*config.bullet_move_count # range of the bullet - have not found the value for this constant
  
         while True:
  
@@ -116,7 +116,7 @@ class Engine:
                 bullets_firing[i].move_forward()
                 # remove expired bullets (those that have travelled more than the "Bullet range" constant) 
                 #  
-                if (bullets_firing[i].distance(bullets_starting_locations[i]) > config.speed["bullet"]*config.bullet_move_count):
+                if (bullets_firing[i].distance(bullets_starting_locations[i]) > BULLET_RANGE):
                     bullets_starting_locations.remove(i)
                     bullets_firing.remove(i)
  
