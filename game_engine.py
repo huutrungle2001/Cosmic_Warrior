@@ -10,6 +10,8 @@ class Engine:
     def init_space_object(width, height, list):
         obj_type = list[0]
         obj_info = list[1].split(",")
+        if len(obj_info) < 4:
+            raise ValueError("Error: game state incomplete")
         x = obj_info[0]
         y = obj_info[1]
         angle = obj_info[2]
@@ -18,6 +20,7 @@ class Engine:
         return SpaceObject(x, y, width, height, angle, obj_type, id)
 
     def import_state(self, game_state_filename):
+        key_set = {"width", "height", "score", "spaceship", "fuel", "asteroid_count", "asteroid_small", "asteroid_large", "bullet_count", "upcomupcoming_asteroids_count", "upcomming_asteroid_small", "upcomming_asteroid_large"}
         try:
             df = open(game_state_filename, "r")
         except FileNotFoundError:
@@ -26,6 +29,10 @@ class Engine:
         df = df.readlines()
         for i in range(len(df)):
             df[i] = df[i].split()
+            if len(df[i]) < 2:
+                raise ValueError("Error: expecting a key and value in line {}").format(i)
+            if not (df[i][0] in key_set):
+                raise ValueError("Error: unexpected key: {} in line {}").format(df[i][0], i)
         
         df_index = 0
         width = df[df_index][1]
@@ -68,29 +75,77 @@ class Engine:
         pass
 
     def run_game(self):
-        turn_actions = [] # thay no = queue la xong
-        while True:
-            if (len(turn_actions)):
-                if (turn_actions[0] == "l"):
-                    self.space_ship.turn_left() # goi cai method quay left
-                else:
-                    self.space_ship.turn_right() # goi cai method quay right -> implement them no cung tien               
-                turn_actions.pop(0)    
+        turn_actions = []  # thay no = queue la xong
+        bullets_firing = [] # danh sach cac bullets dang fire
+        bullets_starting_locations = [] # danh sach cac bullets dang fire
  
+        FUEL_VOLUME = 0  # maximum volume of fuel - no idea about this parameter
+ 
+        BULLET_RANGE = 100 # range of the bullet - have not found the value for this constant
+ 
+        while True:
+ 
+            if self.fuel == 0:  # no more fuel
+                break
+            # Print out the following warning message when fuel remaining drops
+            # to or below the fuel warning thresholds (eg 75%, 50% and 25%):
+            if self.fuel < 0.25 * FUEL_VOLUME:
+                print("25 fuel warning: " + self.fuel + " remaining")
+            elif self.fuel < 0.50 * FUEL_VOLUME:
+                print("50 fuel warning: " + self.fuel + " remaining")
+            elif self.fuel < 0.76 * FUEL_VOLUME:
+                print("75 fuel warning: " + self.fuel + " remaining")
+ 
+            self.fuel -= 1  # fuel consuming by default
+ 
+            if len(turn_actions):
+                if turn_actions[0] == "l":
+                    self.space_ship.turn_left()  # goi cai method quay left
+                else:
+                    self.space_ship.turn_right()  # goi cai method quay right -> implement them no cung tien
+                turn_actions.pop(0)
+ 
+            self.space_ship.move_forward()  # move forward the space ship
+ 
+ 
+            ################
+            for asteroid in self.asteroids:
+                asteroid.move_forward()
+ 
+            for i in len(bullets_firing):
+                bullets_firing[i].move_forward()
+                # remove expired bullets (those that have travelled more than the "Bullet range" constant)
+                if (distance(bullets_firing[i],bullets_starting_locations[i]) > BULLET_RANGE):
+                    bullets_starting_locations.remove(i)
+                    bullets_firing.remove(i)
+ 
+ 
+ 
+            ################
             # 1. Receive player input
             [thrust, left, right, bullet] = self.player.action()
             # 2. Process game logic
-            if (left or right):
-                if (left and right):
+            # The spaceship consumes one unit of fuel each frame, regardless of whether thrusters are used.
+            if left or right:
+                if left and right:
                     pass
-                elif (left):
+                elif left:
                     # turn left
-                    turn_actions.append(["l"]*6)
-                elif (right):
+                    turn_actions.append(["l"] * 6)
+                elif right:
                     # turn right
-                    turn_actions.append(["r"]*6)
-            elif (thrust):
+                    turn_actions.append(["r"] * 6)
+ 
+                self.fuel -= 1  # fuel consuming by turn left / right
+ 
+            if thrust:
                 # thrust
+                self.space_ship.thrust_on = True
+                self.fuel -= 1  # fuel consuming by using thrust engine
+            else:
+                self.space_ship.thrust_on = False  # thrust off
+ 
+            if bullet:
                 pass
  
             # 3. Draw the game state on screen using the GUI class
