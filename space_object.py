@@ -31,9 +31,4 @@ class SpaceObject:
         return self.distance(other) <= (self.radius + other.radius)
 
     def __repr__(self):
-        
-        # return f"{self.obj_type} {}"
-
-        return "TODO"
-
-    # You can add additional methods if required
+        return "{type} {x:.1f},{y:.1f},{angle},{id}".format(type = self.obj_type, x = self.get_xy()[0], y = self.get_xy()[1], angle = self.angle, id = self.id)
