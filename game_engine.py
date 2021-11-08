@@ -20,7 +20,7 @@ class Engine:
         return SpaceObject(x, y, width, height, angle, obj_type, id)
 
     def import_state(self, game_state_filename):
-        key_set = {"width", "height", "score", "spaceship", "fuel", "asteroid_count", "asteroid_small", "asteroid_large", "bullet_count", "upcomupcoming_asteroids_count", "upcomming_asteroid_small", "upcomming_asteroid_large"}
+        key_set = {"width", "height", "score", "spaceship", "fuel", "asteroid_count", "asteroid_small", "asteroid_large", "bullet_count", "upcoming_asteroids_count", "upcoming_asteroid_small", "upcoming_asteroid_large"}
         try:
             df = open(game_state_filename, "r")
         except FileNotFoundError:
@@ -89,12 +89,12 @@ class Engine:
                 break
             # Print out the following warning message when fuel remaining drops
             # to or below the fuel warning thresholds (eg 75%, 50% and 25%):
-            if self.fuel < 0.25 * FUEL_VOLUME:
-                print("25 fuel warning: " + self.fuel + " remaining")
-            elif self.fuel < 0.50 * FUEL_VOLUME:
-                print("50 fuel warning: " + self.fuel + " remaining")
-            elif self.fuel < 0.76 * FUEL_VOLUME:
-                print("75 fuel warning: " + self.fuel + " remaining")
+            if self.fuel < config.fuel_warning_threshold[0] * FUEL_VOLUME:
+                print("{}% fuel warning: {} remaining".format(config.fuel_warning_threshold[0], self.fuel))
+            elif self.fuel < config.fuel_warning_threshold[1] * FUEL_VOLUME:
+                print("{}% fuel warning: {} remaining".format(config.fuel_warning_threshold[1], self.fuel))
+            elif self.fuel < config.fuel_warning_threshold[2] * FUEL_VOLUME:
+                print("{}% fuel warning: {} remaining".format(config.fuel_warning_threshold[2], self.fuel))
  
             self.fuel -= 1  # fuel consuming by default
  
@@ -114,8 +114,9 @@ class Engine:
  
             for i in len(bullets_firing):
                 bullets_firing[i].move_forward()
-                # remove expired bullets (those that have travelled more than the "Bullet range" constant)
-                if (distance(bullets_firing[i],bullets_starting_locations[i]) > BULLET_RANGE):
+                # remove expired bullets (those that have travelled more than the "Bullet range" constant) 
+                #  
+                if (bullets_firing[i].distance(bullets_starting_locations[i]) > config.speed["bullet"]*config.bullet_move_count):
                     bullets_starting_locations.remove(i)
                     bullets_firing.remove(i)
  
