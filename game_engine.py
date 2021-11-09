@@ -35,38 +35,38 @@ class Engine:
                 raise ValueError("Error: unexpected key: {} in line {}".format(df[i][0], i))
         
         df_index = 0
-        width = int(df[df_index][1])
+        self.width = int(df[df_index][1])
 
         df_index += 1 #1
-        height = int(df[df_index][1])
+        self.height = int(df[df_index][1])
 
         df_index += 1 #2
-        score = int(df[df_index][1])
+        self.score = int(df[df_index][1])
         
         df_index += 1 #3
-        spaceship = self.init_space_object(width, height, df[df_index])
+        self.spaceship = self.init_space_object(self.width, self.height, df[df_index])
         
         df_index += 1 #4
-        fuel = int(df[df_index][1])
+        self.fuel = int(df[df_index][1])
 
         df_index += 1 #5
-        asteroids_count = int(df[df_index][1])
+        self.asteroids_count = int(df[df_index][1])
 
-        asteroids_list = []
-        for i in range(asteroids_count):
+        self.asteroids_list = []
+        for i in range(self.asteroids_count):
             df_index += 1 #6 -> 6 + asteroids_count - 1
-            asteroids_list.append(self.init_space_object(width, height, df[df_index]))
+            self.asteroids_list.append(self.init_space_object(self.width, self.height, df[df_index]))
 
         df_index += 1 #6 + asteroids_count
-        bullets_count = int(df[df_index][1])
+        self.bullets_count = int(df[df_index][1])
 
         df_index += 1 #6 + asteroids_count + 1
-        upcoming_asteroids_count = int(df[df_index][1])
+        self.upcoming_asteroids_count = int(df[df_index][1])
         
-        upcoming_asteroids_list = []
-        for i in range(upcoming_asteroids_count):
+        self.upcoming_asteroids_list = []
+        for i in range(self.upcoming_asteroids_count):
             df_index += 1 #6 + asteroids_count + 2 -> 6 + asteroids_count + 2 + upcomupcoming_asteroids_count - 1
-            upcoming_asteroids_list.append(self.init_space_object(width, height, df[df_index]))
+            self.upcoming_asteroids_list.append(self.init_space_object(self.width, self.height, df[df_index]))
 
     def export_state(self, game_state_filename):
         
@@ -100,19 +100,19 @@ class Engine:
  
             if len(turn_actions):
                 if turn_actions[0] == "l":
-                    self.space_ship.turn_left()  # goi cai method quay left
+                    self.spaceship.turn_left()  # goi cai method quay left
                 else:
-                    self.space_ship.turn_right()  # goi cai method quay right -> implement them no cung tien
+                    self.spaceship.turn_right()  # goi cai method quay right -> implement them no cung tien
                 turn_actions.pop(0)
  
-            self.space_ship.move_forward()  # move forward the space ship
+            self.spaceship.move_forward()  # move forward the space ship
  
  
             ################
-            for asteroid in self.asteroids:
+            for asteroid in self.asteroids_list:
                 asteroid.move_forward()
  
-            for i in len(bullets_firing):
+            for i in range(len(bullets_firing)):
                 bullets_firing[i].move_forward()
                 # remove expired bullets (those that have travelled more than the "Bullet range" constant) 
                 #  
@@ -124,7 +124,7 @@ class Engine:
  
             ################
             # 1. Receive player input
-            [thrust, left, right, bullet] = self.player.action()
+            [thrust, left, right, bullet] = self.player.action(self.spaceship, self.asteroids_list, bullets_firing, self.fuel, self.score)
             # 2. Process game logic
             # The spaceship consumes one unit of fuel each frame, regardless of whether thrusters are used.
             if left or right:
@@ -141,10 +141,10 @@ class Engine:
  
             if thrust:
                 # thrust
-                self.space_ship.thrust_on = True
+                self.spaceship.thrust_on = True
                 self.fuel -= 1  # fuel consuming by using thrust engine
             else:
-                self.space_ship.thrust_on = False  # thrust off
+                self.spaceship.thrust_on = False  # thrust off
  
             if bullet:
                 pass
