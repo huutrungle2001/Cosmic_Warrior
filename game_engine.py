@@ -18,7 +18,7 @@ class Engine:
                 try:
                     float(info) or int(info)
                 except ValueError:
-                    raise ValueError("Error: invalid data type in line {}".format(df_index + 1))
+                    raise ValueError("Error: invalid data type in line {line}".format(line=df_index + 1))
         x = float(obj_info[0])
         y = float(obj_info[1])
         angle = int(obj_info[2])%360
@@ -31,9 +31,15 @@ class Engine:
         try:
             int(df[1])
         except ValueError:
-            raise ValueError("Error: invalid data type in line {}", df_index + 1)
+            raise ValueError("Error: invalid data type in line {line}", line=df_index + 1)
         else:
             return int(df[1])
+
+    def check_key(self, df, df_index, valid_key, key_set):
+        df = df[df_index]
+        if (str(df[0]) not in valid_key) or (str(df[0]) not in key_set):
+            raise ValueError("Error: unexpected key: {key} in line {line}".format(key = str(df[0]), line = df_index + 1))
+
 
     def import_state(self, game_state_filename):
         key_set = {"width", "height", "score", "spaceship", "fuel", "asteroids_count", "asteroid_small", "asteroid_large", "bullets_count", "upcoming_asteroids_count", "upcoming_asteroid_small", "upcoming_asteroid_large"}
@@ -46,42 +52,51 @@ class Engine:
         for i in range(len(df)):
             df[i] = df[i].split()
             if len(df[i]) != 2:
-                raise ValueError("Error: expecting a key and value in line {}".format(i + 1))
-            if not (df[i][0] in key_set):
-                raise ValueError("Error: unexpected key: {} in line {}".format(df[i][0], i + 1))
+                raise ValueError("Error: expecting a key and value in line {line}".format(line=i + 1))
         
         df_index = 0
+        self.check_key(df, df_index, {"width"}, key_set)
         self.width = self.read_value(df, df_index)
-
+        
+        self.check_key(df, df_index, {"height"}, key_set)
         df_index += 1 #1
         self.height = self.read_value(df, df_index)
-
+        
+        self.check_key(df, df_index, {"score"}, key_set)
         df_index += 1 #2
         self.score = self.read_value(df, df_index)
         
+        self.check_key(df, df_index, {"spaceship"}, key_set)
         df_index += 1 #3
         self.spaceship = self.init_space_object(self.width, self.height, df, df_index)
         
+        self.check_key(df, df_index, {"fuel"}, key_set)
         df_index += 1 #4
         self.fuel = self.read_value(df, df_index)
 
+        self.check_key(df, df_index, {"asteroids_count"}, key_set)
         df_index += 1 #5
         self.asteroids_count = self.read_value(df, df_index)
-
+        
         self.asteroids_list = []
         for i in range(self.asteroids_count):
             df_index += 1 #6 -> 6 + asteroids_count - 1
+            self.check_key(df, df_index, {"asteroid_large", "asteroid_small"}, key_set)
             self.asteroids_list.append(self.init_space_object(self.width, self.height, df, df_index))
 
         df_index += 1 #6 + asteroids_count
+        
+        self.check_key(df, df_index, {"bullets_count"}, key_set)
         self.bullets_count = self.read_value(df, df_index)
-
+        
+        self.check_key(df, df_index, {"upcoming_asteroids_count"}, key_set)
         df_index += 1 #6 + asteroids_count + 1
         self.upcoming_asteroids_count = self.read_value(df, df_index)
         
         self.upcoming_asteroids_list = []
         for i in range(self.upcoming_asteroids_count):
             df_index += 1 #6 + asteroids_count + 2 -> 6 + asteroids_count + 2 + upcomupcoming_asteroids_count - 1
+            self.check_key(df, df_index, {"upcoming_asteroid_large", "upcoming_asteroid_small"}, key_set)
             self.upcoming_asteroids_list.append(self.init_space_object(self.width, self.height, df, df_index))
 
     def export_state(self, game_state_filename):
@@ -187,3 +202,5 @@ class Engine:
         # self.GUI.finish(???)
  
     # You can add additional methods if required
+
+    
