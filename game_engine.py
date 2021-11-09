@@ -7,6 +7,8 @@ class Engine:
         self.import_state(game_state_filename)
         self.player = player_class()
         self.GUI = gui_class(self.width, self.height)
+        self.score = 0
+        self.bullets_list = []
 
     def init_space_object(self, width, height, df, df_index):
         df = df[df_index]
@@ -175,6 +177,7 @@ class Engine:
             for asteroid in self.asteroids_list:
                 asteroid.move_forward()
                 if (self.spaceship.collide_with(asteroid)):
+                    self.score += config.collide_score
                     print("Score: {score} \t [Spaceship collided with asteroid {id}]".format(
                         score=self.score, id=asteroid.id))
                     asteriods_destroyed_count += 1
