@@ -14,7 +14,7 @@ class Engine:
             raise ValueError("Error: game state incomplete")
         x = float(obj_info[0])
         y = float(obj_info[1])
-        angle = int(obj_info[2])
+        angle = int(obj_info[2])%360
         id = int(obj_info[3])
 
         return SpaceObject(x, y, width, height, angle, obj_type, id)

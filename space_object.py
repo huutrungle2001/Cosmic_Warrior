@@ -8,7 +8,7 @@ class SpaceObject:
         self.y = float(y)
         self.width = int(width)
         self.height = int(height)
-        self.angle = int(angle)
+        self.angle = int(angle)%360
         self.obj_type = str(obj_type)
         self.id = int(id)
 
