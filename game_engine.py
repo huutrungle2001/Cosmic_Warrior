@@ -128,20 +128,19 @@ class Engine:
     def display_remaining_fuel_message(self):
         # Print out the following warning message when fuel remaining drops
         # to or below the fuel warning thresholds (eg 75%, 50% and 25%):
-        FUEL_VOLUME = self.fuel
-        if self.fuel < int(config.fuel_warning_threshold[0]) / 100.0 * FUEL_VOLUME:
+        if self.fuel < int(config.fuel_warning_threshold[0]) / 100.0 * self.FUEL_VOLUME:
             print(
                 "{}% fuel warning: {} remaining".format(
                     int(config.fuel_warning_threshold[0]), self.fuel
                 )
             )
-        elif self.fuel < int(config.fuel_warning_threshold[1]) / 100.0 * FUEL_VOLUME:
+        elif self.fuel < int(config.fuel_warning_threshold[1]) / 100.0 * self.FUEL_VOLUME:
             print(
                 "{}% fuel warning: {} remaining".format(
                     int(config.fuel_warning_threshold[1]), self.fuel
                 )
             )
-        elif self.fuel < int(config.fuel_warning_threshold[2]) / 100.0 * FUEL_VOLUME:
+        elif self.fuel < int(config.fuel_warning_threshold[2]) / 100.0 * self.FUEL_VOLUME:
             print(
                 "{}% fuel warning: {} remaining".format(
                     int(config.fuel_warning_threshold[2]), self.fuel
@@ -153,7 +152,7 @@ class Engine:
         bullets_firing = []  # danh sach cac bullets dang fire
         bullets_starting_locations = []  # danh sach cac bullets dang fire
 
-        FUEL_VOLUME = self.fuel  # maximum volume of fuel - no idea about this parameter
+        self.FUEL_VOLUME = self.fuel  # maximum volume of fuel - no idea about this parameter
 
         BULLET_RANGE = config.speed["bullet"] * \
             config.bullet_move_count
