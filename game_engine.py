@@ -125,105 +125,114 @@ class Engine:
         for upcoming_asteroid in self.upcoming_asteroids_list:
             f.write(upcoming_asteroid.__repr__())
 
+    def display_remaining_fuel_message(self):
+        # Print out the following warning message when fuel remaining drops
+        # to or below the fuel warning thresholds (eg 75%, 50% and 25%):
+        FUEL_VOLUME = self.fuel
+        if self.fuel < int(config.fuel_warning_threshold[0]) / 100.0 * FUEL_VOLUME:
+            print(
+                "{}% fuel warning: {} remaining".format(
+                    int(config.fuel_warning_threshold[0]), self.fuel
+                )
+            )
+        elif self.fuel < int(config.fuel_warning_threshold[1]) / 100.0 * FUEL_VOLUME:
+            print(
+                "{}% fuel warning: {} remaining".format(
+                    int(config.fuel_warning_threshold[1]), self.fuel
+                )
+            )
+        elif self.fuel < int(config.fuel_warning_threshold[2]) / 100.0 * FUEL_VOLUME:
+            print(
+                "{}% fuel warning: {} remaining".format(
+                    int(config.fuel_warning_threshold[2]), self.fuel
+                )
+            )
+
     def run_game(self):
         turn_actions = []  # thay no = queue la xong
         bullets_firing = []  # danh sach cac bullets dang fire
         bullets_starting_locations = []  # danh sach cac bullets dang fire
 
-        FUEL_VOLUME = 0  # maximum volume of fuel - no idea about this parameter
+        FUEL_VOLUME = self.fuel  # maximum volume of fuel - no idea about this parameter
 
-        # range of the bullet - have not found the value for this constant
-        BULLET_RANGE = int(config.speed["bullet"]) * \
-            int(config.bullet_move_count)
+        BULLET_RANGE = config.speed["bullet"] * \
+            config.bullet_move_count
 
         while True:
+            self.display_remaining_fuel_message()
+
             # 1. Manoeuvre the spaceship as per the Player's input
             if self.fuel == 0:  # no more fuel
                 break
-            # Print out the following warning message when fuel remaining drops
-            # to or below the fuel warning thresholds (eg 75%, 50% and 25%):
-            if self.fuel < int(config.fuel_warning_threshold[0]) * FUEL_VOLUME:
-                print("{}% fuel warning: {} remaining".format(
-                    int(config.fuel_warning_threshold[0]), self.fuel))
-            elif self.fuel < int(config.fuel_warning_threshold[1]) * FUEL_VOLUME:
-                print("{}% fuel warning: {} remaining".format(
-                    int(config.fuel_warning_threshold[1]), self.fuel))
-            elif self.fuel < int(config.fuel_warning_threshold[2]) * FUEL_VOLUME:
-                print("{}% fuel warning: {} remaining".format(
-                    int(config.fuel_warning_threshold[2]), self.fuel))
 
-            self.fuel -= 1  # fuel consuming by default
-
-            if len(turn_actions):
-                if turn_actions[0] == "l":
-                    self.spaceship.turn_left()  # goi cai method quay left
-                else:
-                    # goi cai method quay right -> implement them no cung tien
-                    self.spaceship.turn_right()
-                turn_actions.pop(0)
+            self.fuel -= config.spaceship_fuel_consumption  # fuel consuming by default
 
             self.spaceship.move_forward()  # move forward the space ship
 
             ################
             # 2. Update positions of asteroids by calling move_forward() for each asteroid
+            asteriods_destroyed_count = 0
+            asteriods_destroyed = []
             for asteroid in self.asteroids_list:
                 asteroid.move_forward()
+                if (self.spaceship.collide_with(asteroid)):
+                    print("Score: {score} \t [Spaceship collided with asteroid {id}]".format(
+                        score=self.score, id=asteroid.id))
+                    asteriods_destroyed_count += 1
+                    asteriods_destroyed.append(asteroid)
 
-            # 3. Update positions of bullets:
-            for i in range(len(bullets_firing)):
-                # Launch a new bullet if instructed by Player
-                # If fuel is less than the Minimum fuel to shoot bullet constant, do not launch the bullet
-                if self.fuel <= int(config.shoot_fuel_threshold):
-                    print("Cannot shoot due to low fuel")
+            if (asteriods_destroyed_count):
+                for asteriod_destroyed in asteriods_destroyed:
+                    self.asteroids_list.remove(asteriod_destroyed)
+
+                self.asteroids_count -= asteriods_destroyed_count
+
+                if (self.upcoming_asteroids_count == 0):
+                    print("Error: no more asteroids available")
+                    break
                 else:
-                    # New bullet has the same position as
-                    new_bullet = new_bullet.copy(self.spaceship)
-                    bullets_firing.append()
-                bullets_firing[i].move_forward()
-                # remove expired bullets (those that have travelled more than the "Bullet range" constant)
-                #
-                if (bullets_firing[i].distance(bullets_starting_locations[i]) > BULLET_RANGE):
-                    bullets_starting_locations.remove(i)
-                    bullets_firing.remove(i)
+                    self.asteroids_list.append(self.upcoming_asteroids_list[0])
+                    self.asteroids_count += 1
 
-            ################
+                    print("Added asteroid {id}".format(
+                        id=self.upcoming_asteroids_list[0].id))
+
+                    self.upcoming_asteroids_count -= 1
+                    self.upcoming_asteroids_list.pop(0)
+
             # 1. Receive player input
             [thrust, left, right, bullet] = self.player.action(
-                self.spaceship, self.asteroids_list, bullets_firing, self.fuel, self.score)
+                self.spaceship,
+                self.asteroids_list,
+                bullets_firing,
+                self.fuel,
+                self.score
+            )
             # 2. Process game logic
             # The spaceship consumes one unit of fuel each frame, regardless of whether thrusters are used.
             if left or right:
-                if left and right:
-                    pass
-                elif left:
-                    # turn left
-                    turn_actions.append(["l"] * 6)
-                elif right:
-                    # turn right
-                    turn_actions.append(["r"] * 6)
-
-                self.fuel -= 1  # fuel consuming by turn left / right
+                pass
 
             if thrust:
                 # thrust
-                self.spaceship.thrust_on = True
-                self.fuel -= 1  # fuel consuming by using thrust engine
+                pass
             else:
-                self.spaceship.thrust_on = False  # thrust off
+                pass
 
             if bullet:
                 pass
 
             # 3. Draw the game state on screen using the GUI class
             # self.GUI.update_frame(???)
-
+            self.GUI.update_frame(
+                self.spaceship, self.asteroids_list, self.bullet_list, self.score, self.fuel)
             # Game loop should stop when:
             # - the spaceship runs out of fuel, or
             # - no more asteroids are available
 
-            break
+            # break
 
         # Display final score
-        # self.GUI.finish(???)
+        self.GUI.finish()
 
     # You can add additional methods if required
