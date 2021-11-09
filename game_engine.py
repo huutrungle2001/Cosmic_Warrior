@@ -7,20 +7,20 @@ class Engine:
         self.player = player_class()
         self.GUI = gui_class(self.width, self.height)
 
-    def init_space_object(width, height, list):
-        obj_type = list[0]
+    def init_space_object(self, width, height, list):
+        obj_type = str(list[0])
         obj_info = list[1].split(",")
         if len(obj_info) < 4:
             raise ValueError("Error: game state incomplete")
-        x = obj_info[0]
-        y = obj_info[1]
-        angle = obj_info[2]
-        id = obj_info[3]
+        x = float(obj_info[0])
+        y = float(obj_info[1])
+        angle = int(obj_info[2])
+        id = int(obj_info[3])
 
         return SpaceObject(x, y, width, height, angle, obj_type, id)
 
     def import_state(self, game_state_filename):
-        key_set = {"width", "height", "score", "spaceship", "fuel", "asteroid_count", "asteroid_small", "asteroid_large", "bullet_count", "upcoming_asteroids_count", "upcoming_asteroid_small", "upcoming_asteroid_large"}
+        key_set = {"width", "height", "score", "spaceship", "fuel", "asteroids_count", "asteroid_small", "asteroid_large", "bullets_count", "upcoming_asteroids_count", "upcoming_asteroid_small", "upcoming_asteroid_large"}
         try:
             df = open(game_state_filename, "r")
         except FileNotFoundError:
@@ -30,27 +30,27 @@ class Engine:
         for i in range(len(df)):
             df[i] = df[i].split()
             if len(df[i]) < 2:
-                raise ValueError("Error: expecting a key and value in line {}").format(i)
+                raise ValueError("Error: expecting a key and value in line {}".format(i))
             if not (df[i][0] in key_set):
-                raise ValueError("Error: unexpected key: {} in line {}").format(df[i][0], i)
+                raise ValueError("Error: unexpected key: {} in line {}".format(df[i][0], i))
         
         df_index = 0
-        width = df[df_index][1]
+        width = int(df[df_index][1])
 
         df_index += 1 #1
-        height = df[df_index][1]
+        height = int(df[df_index][1])
 
         df_index += 1 #2
-        score = df[df_index][1]
+        score = int(df[df_index][1])
         
         df_index += 1 #3
         spaceship = self.init_space_object(width, height, df[df_index])
         
         df_index += 1 #4
-        fuel = df[df_index][1]
+        fuel = int(df[df_index][1])
 
         df_index += 1 #5
-        asteroids_count = df[df_index][1]
+        asteroids_count = int(df[df_index][1])
 
         asteroids_list = []
         for i in range(asteroids_count):
@@ -58,10 +58,10 @@ class Engine:
             asteroids_list.append(self.init_space_object(width, height, df[df_index]))
 
         df_index += 1 #6 + asteroids_count
-        bullets_count = df[df_index][1]
+        bullets_count = int(df[df_index][1])
 
         df_index += 1 #6 + asteroids_count + 1
-        upcoming_asteroids_count = df[df_index][1]
+        upcoming_asteroids_count = int(df[df_index][1])
         
         upcoming_asteroids_list = []
         for i in range(upcoming_asteroids_count):
@@ -81,7 +81,7 @@ class Engine:
  
         FUEL_VOLUME = 0  # maximum volume of fuel - no idea about this parameter
  
-        BULLET_RANGE = config.speed["bullet"]*config.bullet_move_count # range of the bullet - have not found the value for this constant
+        BULLET_RANGE = int(config.speed["bullet"])*int(config.bullet_move_count) # range of the bullet - have not found the value for this constant
  
         while True:
  
@@ -89,12 +89,12 @@ class Engine:
                 break
             # Print out the following warning message when fuel remaining drops
             # to or below the fuel warning thresholds (eg 75%, 50% and 25%):
-            if self.fuel < config.fuel_warning_threshold[0] * FUEL_VOLUME:
-                print("{}% fuel warning: {} remaining".format(config.fuel_warning_threshold[0], self.fuel))
-            elif self.fuel < config.fuel_warning_threshold[1] * FUEL_VOLUME:
-                print("{}% fuel warning: {} remaining".format(config.fuel_warning_threshold[1], self.fuel))
-            elif self.fuel < config.fuel_warning_threshold[2] * FUEL_VOLUME:
-                print("{}% fuel warning: {} remaining".format(config.fuel_warning_threshold[2], self.fuel))
+            if self.fuel < int(config.fuel_warning_threshold[0]) * FUEL_VOLUME:
+                print("{}% fuel warning: {} remaining".format(int(config.fuel_warning_threshold[0]), self.fuel))
+            elif self.fuel < int(config.fuel_warning_threshold[1]) * FUEL_VOLUME:
+                print("{}% fuel warning: {} remaining".format(int(config.fuel_warning_threshold[1]), self.fuel))
+            elif self.fuel < int(config.fuel_warning_threshold[2]) * FUEL_VOLUME:
+                print("{}% fuel warning: {} remaining".format(int(config.fuel_warning_threshold[2]), self.fuel))
  
             self.fuel -= 1  # fuel consuming by default
  
