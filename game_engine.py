@@ -84,7 +84,7 @@ class Engine:
         BULLET_RANGE = int(config.speed["bullet"])*int(config.bullet_move_count) # range of the bullet - have not found the value for this constant
  
         while True:
- 
+            # 1. Manoeuvre the spaceship as per the Player's input
             if self.fuel == 0:  # no more fuel
                 break
             # Print out the following warning message when fuel remaining drops
@@ -107,12 +107,21 @@ class Engine:
  
             self.spaceship.move_forward()  # move forward the space ship
  
- 
             ################
+            # 2. Update positions of asteroids by calling move_forward() for each asteroid
             for asteroid in self.asteroids_list:
                 asteroid.move_forward()
- 
+
+            # 3. Update positions of bullets:
             for i in range(len(bullets_firing)):
+                # Launch a new bullet if instructed by Player
+                # If fuel is less than the Minimum fuel to shoot bullet constant, do not launch the bullet
+                if self.fuel <= int(config.shoot_fuel_threshold):
+                    print("Cannot shoot due to low fuel")
+                else:
+                    # New bullet has the same position as
+                    new_bullet = new_bullet.copy(self.spaceship)
+                    bullets_firing.append()
                 bullets_firing[i].move_forward()
                 # remove expired bullets (those that have travelled more than the "Bullet range" constant) 
                 #  
@@ -120,7 +129,7 @@ class Engine:
                     bullets_starting_locations.remove(i)
                     bullets_firing.remove(i)
  
- 
+     
  
             ################
             # 1. Receive player input
