@@ -109,23 +109,23 @@ class Engine:
             self.upcoming_asteroids_list.append(
                 self.init_space_object(self.width, self.height, df, df_index))
 
-    def to_string_space_obj(self, obj):
-        return "{type} {x},{y},{angle},{id}\n".format(type=obj.obj_type, x=obj.x, y=obj.y, angle=obj.angle, id=obj.id)
-
     def export_state(self, game_state_filename):
         f = open(game_state_filename, 'w')
         f.write("width " + str(self.width) + "\n")
         f.write("height " + str(self.height) + "\n")
         f.write("score " + str(self.score) + "\n")
-        f.write(self.to_string_space_obj(self.spaceship))
+        # f.write(self.to_string_space_obj(self.spaceship))
+        f.write(self.spaceship.__repr__())
         f.write("fuel " + str(self.fuel) + "\n")
         f.write("asteroids_count " + str(self.asteroids_count) + "\n")
         for asteroid in self.asteroids_list:
-            f.write(self.to_string_space_obj(asteroid))
+            # f.write(self.to_string_space_obj(asteroid))
+            f.write(asteroid.__repr__())
         f.write("bullets_count " + str(self.bullets_count) + "\n")
         f.write("upcoming_asteroids_count " + str(self.upcoming_asteroids_count) + "\n")
         for upcoming_asteroid in self.upcoming_asteroids_list:
-            f.write(self.to_string_space_obj(upcoming_asteroid))
+            # f.write(self.to_string_space_obj(upcoming_asteroid))
+            f.write(upcoming_asteroid.__repr__())
 
     def run_game(self):
         turn_actions = []  # thay no = queue la xong
