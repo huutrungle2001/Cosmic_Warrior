@@ -37,6 +37,7 @@ class Engine:
 
     def check_key(self, df, df_index, valid_key, key_set):
         df = df[df_index]
+        print(df[0])
         if (str(df[0]) not in valid_key) or (str(df[0]) not in key_set):
             raise ValueError("Error: unexpected key: {key} in line {line}".format(key = str(df[0]), line = df_index + 1))
 
