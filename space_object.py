@@ -33,10 +33,10 @@ class SpaceObject:
         return (self.x, self.y)
 
     def distance(self, other):
-        return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
+        return (self.x - other.x)**2 + (self.y - other.y)**2
 
     def collide_with(self, other):
-        return self.distance(other)**2 <= math.sqrt(config.radius[self.obj_type] + config.radius[other.obj_type])
+        return self.distance(other) <= (config.radius[self.obj_type] + config.radius[other.obj_type])**2
 
     def __repr__(self):
         return "{type} {x:.1f},{y:.1f},{angle},{id}\n".format(type=self.obj_type, x=self.x, y=self.y, angle=self.angle, id=self.id)
