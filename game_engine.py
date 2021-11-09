@@ -221,9 +221,6 @@ class Engine:
             else:
                 pass
 
-            if :
-                pass
-
             # 3. Draw the game state on screen using the GUI class
             # self.GUI.update_frame(???)
             self.GUI.update_frame(
