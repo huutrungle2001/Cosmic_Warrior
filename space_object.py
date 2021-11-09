@@ -2,6 +2,7 @@ import math
 import config
 
 class SpaceObject:
+    # Constructor
     def __init__(self, x, y, width, height, angle, obj_type, id):
         self.x = float(x)
         self.y = float(y)

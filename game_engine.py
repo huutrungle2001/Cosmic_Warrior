@@ -80,7 +80,7 @@ class Engine:
         bullets_starting_locations = [] # danh sach cac bullets dang fire
  
         FUEL_VOLUME = 0  # maximum volume of fuel - no idea about this parameter
- 
+
         BULLET_RANGE = int(config.speed["bullet"])*int(config.bullet_move_count) # range of the bullet - have not found the value for this constant
  
         while True:
