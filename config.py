@@ -9,9 +9,9 @@ radius = {"spaceship": 12,
 angle_increment = 15
 
 speed = {"spaceship": 10,
-          "bullet": 30,
-          "asteroid_small": 3,
-          "asteroid_large": 3}
+         "bullet": 30,
+         "asteroid_small": 3,
+         "asteroid_large": 3}
 
 bullet_move_count = 5
 
