@@ -156,7 +156,7 @@ class Engine:
 
         self.FUEL_VOLUME = self.fuel  # maximum volume of fuel - no idea about this parameter
 
-        BULLET_RANGE = config.speed["bullet"] * \
+        BULLET_RANGE = config.speed[""] * \
             config.bullet_move_count
 
         while True:
@@ -203,7 +203,7 @@ class Engine:
                     self.upcoming_asteroids_list.pop(0)
 
             # 1. Receive player input
-            [thrust, left, right, bullet] = self.player.action(
+            [thrust, left, right, ] = self.player.action(
                 self.spaceship,
                 self.asteroids_list,
                 bullets_firing,
@@ -221,13 +221,13 @@ class Engine:
             else:
                 pass
 
-            if bullet:
+            if :
                 pass
 
             # 3. Draw the game state on screen using the GUI class
             # self.GUI.update_frame(???)
             self.GUI.update_frame(
-                self.spaceship, self.asteroids_list, self.bullet_list, self.score, self.fuel)
+                self.spaceship, self.asteroids_list, self.bullets_list, self.score, self.fuel)
             # Game loop should stop when:
             # - the spaceship runs out of fuel, or
             # - no more asteroids are available
