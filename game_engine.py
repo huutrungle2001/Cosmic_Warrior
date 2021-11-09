@@ -7,17 +7,33 @@ class Engine:
         self.player = player_class()
         self.GUI = gui_class(self.width, self.height)
 
-    def init_space_object(self, width, height, list):
-        obj_type = str(list[0])
-        obj_info = list[1].split(",")
-        if len(obj_info) < 4:
+    def init_space_object(self, width, height, df, df_index):
+        df = df[df_index]
+        obj_type = str(df[0])
+        obj_info = df[1].split(",")
+        if len(obj_info) != 4:
             raise ValueError("Error: game state incomplete")
+        else:
+            for info in obj_info:
+                try:
+                    float(info) or int(info)
+                except ValueError:
+                    raise ValueError("Error: invalid data type in line {}".format(df_index + 1))
         x = float(obj_info[0])
         y = float(obj_info[1])
         angle = int(obj_info[2])%360
         id = int(obj_info[3])
 
         return SpaceObject(x, y, width, height, angle, obj_type, id)
+
+    def read_key(self, df, df_index):
+        df = df[df_index]
+        try:
+            int(df[1])
+        except ValueError:
+            raise ValueError("Error: invalid data type in line {}", df_index + 1)
+        else:
+            return int(df[1])
 
     def import_state(self, game_state_filename):
         key_set = {"width", "height", "score", "spaceship", "fuel", "asteroids_count", "asteroid_small", "asteroid_large", "bullets_count", "upcoming_asteroids_count", "upcoming_asteroid_small", "upcoming_asteroid_large"}
@@ -29,44 +45,44 @@ class Engine:
         df = df.readlines()
         for i in range(len(df)):
             df[i] = df[i].split()
-            if len(df[i]) < 2:
-                raise ValueError("Error: expecting a key and value in line {}".format(i))
+            if len(df[i]) != 2:
+                raise ValueError("Error: expecting a key and value in line {}".format(i + 1))
             if not (df[i][0] in key_set):
-                raise ValueError("Error: unexpected key: {} in line {}".format(df[i][0], i))
+                raise ValueError("Error: unexpected key: {} in line {}".format(df[i][0], i + 1))
         
         df_index = 0
-        self.width = int(df[df_index][1])
+        self.width = self.read_key(df, df_index)
 
         df_index += 1 #1
-        self.height = int(df[df_index][1])
+        self.height = self.read_key(df, df_index)
 
         df_index += 1 #2
-        self.score = int(df[df_index][1])
+        self.score = self.read_key(df, df_index)
         
         df_index += 1 #3
-        self.spaceship = self.init_space_object(self.width, self.height, df[df_index])
+        self.spaceship = self.init_space_object(self.width, self.height, df, df_index)
         
         df_index += 1 #4
-        self.fuel = int(df[df_index][1])
+        self.fuel = self.read_key(df, df_index)
 
         df_index += 1 #5
-        self.asteroids_count = int(df[df_index][1])
+        self.asteroids_count = self.read_key(df, df_index)
 
         self.asteroids_list = []
         for i in range(self.asteroids_count):
             df_index += 1 #6 -> 6 + asteroids_count - 1
-            self.asteroids_list.append(self.init_space_object(self.width, self.height, df[df_index]))
+            self.asteroids_list.append(self.init_space_object(self.width, self.height, df, df_index))
 
         df_index += 1 #6 + asteroids_count
-        self.bullets_count = int(df[df_index][1])
+        self.bullets_count = self.read_key(df, df_index)
 
         df_index += 1 #6 + asteroids_count + 1
-        self.upcoming_asteroids_count = int(df[df_index][1])
+        self.upcoming_asteroids_count = self.read_key(df, df_index)
         
         self.upcoming_asteroids_list = []
         for i in range(self.upcoming_asteroids_count):
             df_index += 1 #6 + asteroids_count + 2 -> 6 + asteroids_count + 2 + upcomupcoming_asteroids_count - 1
-            self.upcoming_asteroids_list.append(self.init_space_object(self.width, self.height, df[df_index]))
+            self.upcoming_asteroids_list.append(self.init_space_object(self.width, self.height, df, df_index))
 
     def export_state(self, game_state_filename):
         
