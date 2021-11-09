@@ -4,8 +4,8 @@ import config
 class SpaceObject:
     # Constructor
     def __init__(self, x, y, width, height, angle, obj_type, id):
-        self.x = float(x)%width
-        self.y = float(y)%height
+        self.x = (float(x) + int(width))%int(width)
+        self.y = (float(y) + int(height))%int(height)
         self.width = int(width)
         self.height = int(height)
         self.angle = int(angle) % 360
@@ -18,13 +18,13 @@ class SpaceObject:
 
     def turn_right(self):
         self.angle -= int(config.angle_increment)
-        self.angle %= 360
+        self.angle = (self.angle + 360) % 360
 
     def move_forward(self):
         self.x += int(config.speed[str(self.obj_type)]) * math.cos(math.radians(int(self.angle)))
-        self.x %= self.width
+        self.x = (self.x + self.width)%self.width
         self.y += int(config.speed[str(self.obj_type)]) * math.sin(math.radians(int(self.angle)))
-        self.y %= self.height
+        self.y = (self.y + self.height)%self.height
 
     def get_xy(self):
         return (self.x, self.y)
