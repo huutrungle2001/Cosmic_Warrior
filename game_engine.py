@@ -26,7 +26,7 @@ class Engine:
 
         return SpaceObject(x, y, width, height, angle, obj_type, id)
 
-    def read_key(self, df, df_index):
+    def read_value(self, df, df_index):
         df = df[df_index]
         try:
             int(df[1])
@@ -51,22 +51,22 @@ class Engine:
                 raise ValueError("Error: unexpected key: {} in line {}".format(df[i][0], i + 1))
         
         df_index = 0
-        self.width = self.read_key(df, df_index)
+        self.width = self.read_value(df, df_index)
 
         df_index += 1 #1
-        self.height = self.read_key(df, df_index)
+        self.height = self.read_value(df, df_index)
 
         df_index += 1 #2
-        self.score = self.read_key(df, df_index)
+        self.score = self.read_value(df, df_index)
         
         df_index += 1 #3
         self.spaceship = self.init_space_object(self.width, self.height, df, df_index)
         
         df_index += 1 #4
-        self.fuel = self.read_key(df, df_index)
+        self.fuel = self.read_value(df, df_index)
 
         df_index += 1 #5
-        self.asteroids_count = self.read_key(df, df_index)
+        self.asteroids_count = self.read_value(df, df_index)
 
         self.asteroids_list = []
         for i in range(self.asteroids_count):
@@ -74,10 +74,10 @@ class Engine:
             self.asteroids_list.append(self.init_space_object(self.width, self.height, df, df_index))
 
         df_index += 1 #6 + asteroids_count
-        self.bullets_count = self.read_key(df, df_index)
+        self.bullets_count = self.read_value(df, df_index)
 
         df_index += 1 #6 + asteroids_count + 1
-        self.upcoming_asteroids_count = self.read_key(df, df_index)
+        self.upcoming_asteroids_count = self.read_value(df, df_index)
         
         self.upcoming_asteroids_list = []
         for i in range(self.upcoming_asteroids_count):
