@@ -10,7 +10,7 @@ class Engine:
 
     def init_space_object(self, width, height, df, df_index):
         df = df[df_index]
-        obj_type = str(df[0])
+        obj_type = df[0]
         obj_info = df[1].split(",")
         if len(obj_info) != 4:
             raise ValueError("Error: game state incomplete")
@@ -21,10 +21,10 @@ class Engine:
                 except ValueError:
                     raise ValueError(
                         "Error: invalid data type in line {line}".format(line=df_index + 1))
-        x = float(obj_info[0])
-        y = float(obj_info[1])
-        angle = int(obj_info[2]) % 360
-        id = int(obj_info[3])
+        x = obj_info[0]
+        y = obj_info[1]
+        angle = obj_info[2]
+        id = obj_info[3]
 
         return SpaceObject(x, y, width, height, angle, obj_type, id)
 
@@ -114,17 +114,15 @@ class Engine:
         f.write("width " + str(self.width) + "\n")
         f.write("height " + str(self.height) + "\n")
         f.write("score " + str(self.score) + "\n")
-        # f.write(self.to_string_space_obj(self.spaceship))
         f.write(self.spaceship.__repr__())
         f.write("fuel " + str(self.fuel) + "\n")
         f.write("asteroids_count " + str(self.asteroids_count) + "\n")
         for asteroid in self.asteroids_list:
-            # f.write(self.to_string_space_obj(asteroid))
             f.write(asteroid.__repr__())
         f.write("bullets_count " + str(self.bullets_count) + "\n")
-        f.write("upcoming_asteroids_count " + str(self.upcoming_asteroids_count) + "\n")
+        f.write("upcoming_asteroids_count " +
+                str(self.upcoming_asteroids_count) + "\n")
         for upcoming_asteroid in self.upcoming_asteroids_list:
-            # f.write(self.to_string_space_obj(upcoming_asteroid))
             f.write(upcoming_asteroid.__repr__())
 
     def run_game(self):
