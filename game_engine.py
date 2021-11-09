@@ -133,7 +133,7 @@ class Engine:
         if self.fuel < int(config.fuel_warning_threshold[2]) / 100.0 * self.FUEL_VOLUME:
             print(
                 "{}% fuel warning: {} remaining".format(
-                    int(config.fuel_warning_threshold[0]), self.fuel
+                    int(config.fuel_warning_threshold[2]), self.fuel
                 )
             )
         elif self.fuel < int(config.fuel_warning_threshold[1]) / 100.0 * self.FUEL_VOLUME:
@@ -145,7 +145,7 @@ class Engine:
         elif self.fuel < int(config.fuel_warning_threshold[0]) / 100.0 * self.FUEL_VOLUME:
             print(
                 "{}% fuel warning: {} remaining".format(
-                    int(config.fuel_warning_threshold[2]), self.fuel
+                    int(config.fuel_warning_threshold[0]), self.fuel
                 )
             )
 
