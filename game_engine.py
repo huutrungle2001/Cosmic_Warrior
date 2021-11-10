@@ -116,16 +116,16 @@ class Engine:
         f.write("width " + str(self.width) + "\n")
         f.write("height " + str(self.height) + "\n")
         f.write("score " + str(self.score) + "\n")
-        f.write(self.spaceship.__repr__())
+        f.write(self.spaceship.__repr__() + "\n")
         f.write("fuel " + str(self.fuel) + "\n")
         f.write("asteroids_count " + str(self.asteroids_count) + "\n")
         for asteroid in self.asteroids_list:
-            f.write(asteroid.__repr__())
+            f.write(asteroid.__repr__() + "\n")
         f.write("bullets_count " + str(self.bullets_count) + "\n")
         f.write("upcoming_asteroids_count " +
                 str(self.upcoming_asteroids_count) + "\n")
         for upcoming_asteroid in self.upcoming_asteroids_list:
-            f.write(upcoming_asteroid.__repr__())
+            f.write(upcoming_asteroid.__repr__() + "\n")
 
     def display_remaining_fuel_message(self):
         # Print out the following warning message when fuel remaining drops

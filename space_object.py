@@ -39,4 +39,4 @@ class SpaceObject:
         return self.distance(other) <= (config.radius[self.obj_type] + config.radius[other.obj_type])**2
 
     def __repr__(self):
-        return "{type} {x:.1f},{y:.1f},{angle},{id}\n".format(type=self.obj_type, x=self.x, y=self.y, angle=self.angle, id=self.id)
+        return "{type} {x:.1f},{y:.1f},{angle},{id}".format(type=self.obj_type, x=self.x, y=self.y, angle=self.angle, id=self.id)
